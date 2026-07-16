@@ -1,11 +1,29 @@
-export class Logger {
+import { createLogger, format, transports } from 'winston';
 
-    static info(message: string) {
-        console.log(`[INFO] ${message}`);
-    }
+export const logger = createLogger({
 
-    static error(message: string) {
-        console.log(`[ERROR] ${message}`);
-    }
+    level: 'info',
 
-}
+    format: format.combine(
+
+        format.timestamp({
+            format: 'DD-MM-YYYY HH:mm:ss'
+        }),
+
+        format.printf(({ timestamp, level, message }) => {
+            return `[${timestamp}] ${level.toUpperCase()} : ${message}`;
+        })
+
+    ),
+
+    transports: [
+
+        new transports.Console(),
+
+        new transports.File({
+            filename: 'reports/execution.log'
+        })
+
+    ]
+
+});
