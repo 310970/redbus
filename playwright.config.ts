@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 export default defineConfig({
@@ -12,24 +13,22 @@ export default defineConfig({
 
   retries: process.env.CI ? 2 : 0,
 
-  workers: 1,
+  workers: process.env.CI ? 1 : 1,
 
- reporter: [
+  reporter: [
     ['list'],
-    ['html', { open: 'always' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['json', { outputFile: 'reports/report.json' }],
     ['junit', { outputFile: 'reports/results.xml' }]
-],
+  ],
 
   use: {
 
-    baseURL: 'https://www.redbus.in/',
+    baseURL: process.env.BASE_URL,
 
-    browserName: 'chromium',
-
-    channel: 'chrome',
-
-    headless: false,
+    headless: process.env.CI
+      ? true
+      : process.env.HEADLESS === 'true',
 
     viewport: {
       width: 1536,
