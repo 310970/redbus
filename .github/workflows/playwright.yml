@@ -13,9 +13,6 @@ on:
 
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   Playwright-Test:
 
@@ -40,29 +37,16 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      - name: Install Allure Commandline
+        run: npm install -g allure-commandline
+
       - name: Run Playwright Tests
         run: npx playwright test
 
-      # Checkout previous gh-pages branch (contains history)
-      - name: Checkout gh-pages branch
-        if: always()
-        continue-on-error: true
-        uses: actions/checkout@v5
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      # Generate Allure report with history
       - name: Generate Allure Report
         if: always()
-        uses: simple-elf/allure-report-action@master
-        with:
-          allure_results: allure-results
-          allure_report: allure-report
-          gh_pages: gh-pages
-          allure_history: allure-history
+        run: allure generate allure-results --clean -o allure-report
 
-      # Upload Allure Report
       - name: Upload Allure Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,7 +54,6 @@ jobs:
           name: Allure-Report
           path: allure-report/
 
-      # Upload Playwright HTML Report
       - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -78,7 +61,6 @@ jobs:
           name: Playwright-Report
           path: playwright-report/
 
-      # Upload Playwright Test Results
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -86,19 +68,9 @@ jobs:
           name: Test-Results
           path: test-results/
 
-      # Upload JSON Report
       - name: Upload JSON Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: JSON-Report
           path: reports/
-
-      # Deploy Allure Report to GitHub Pages
-      - name: Deploy Allure Report
-        if: always()
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: allure-history
-          token: ${{ secrets.GITHUB_TOKEN }}
