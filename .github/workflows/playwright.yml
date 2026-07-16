@@ -14,7 +14,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   Playwright-Test:
 
     runs-on: ubuntu-latest
@@ -38,8 +37,22 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      - name: Install Allure Commandline
+        run: npm install -g allure-commandline
+
       - name: Run Playwright Tests
         run: npx playwright test
+
+      - name: Generate Allure Report
+        if: always()
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Allure-Report
+          path: allure-report/
 
       - name: Upload HTML Report
         if: always()
