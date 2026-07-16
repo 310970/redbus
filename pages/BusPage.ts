@@ -10,7 +10,7 @@ export class BusPage extends BasePage {
     private krishTravels = this.page
         .locator("li[role='button']")
         .filter({
-            hasText: "Krish Travels"
+            hasText: "kKrish Travels"
         })
         .first();
 
